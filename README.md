@@ -1,6 +1,6 @@
 # The One SDK
 
-[The One API](https://the-one-api.dev/) is a web API that aims to be the one API _to rule them all_. It provides detailed data about the Lorder of the Rings books and movies, including character info, quotes, and more. The One SDK aims to provide a simple client to make it easier to access The One API in JavaScript.
+[The One API](https://the-one-api.dev/) is a web API that aims to be the one API _to rule them all_. It provides detailed data about the Lord of the Rings books and movies, including character info, quotes, and more. The One SDK aims to provide a simple client to make it easier to access The One API in JavaScript.
 
 At this time, we have only implemented access to **movie** and **quote** data, but more is on the way!
 
@@ -20,9 +20,9 @@ In order to use The One API SDK, you will need an API access token. If you do no
 
 ### Using the SDK
 
-In order to make calls to The One API with the SDK, you will need to initialize an SDK client with your access token.
-
 #### Fetching Data
+
+In order to make calls to The One API with the SDK, you will need to initialize an SDK client with your access token.
 
 ```javascript
 import theOneAPIClient from "es-liblab-take-home-project";
@@ -31,7 +31,7 @@ import theOneAPIClient from "es-liblab-take-home-project";
 const client = theOneAPIClient({ accessToken: "my-access-token" });
 ```
 
-Once you have a client, you can then proceed to make calls to the API using methods like `fetchMovies` or `fetchQuotes`. These methods return a `ResultSet`, which has properties like `total` (the total number of matching records in The One API).
+Once you have a client, you can then proceed to make calls to the API using methods like `fetchMovies` or `fetchQuotes`. These methods return a [ResultSet](src/results.ts), which has properties like `total` (the total number of matching records in The One API).
 
 ```javascript
 // Fetch data about all of the LotR movies from The One API (promise-based)
@@ -44,7 +44,7 @@ const results = await client.fetchMovies();
 console.log(`There are still ${results.total} LotR movies`);
 ```
 
-By default, the SDK will fetch 100 results for each query, but this can be configured per fetch call. The `ResultSet` has a `data` propertyth at allows you to access the records pulled down from the API.
+By default, the SDK will fetch 100 results for each query, but this can be configured per fetch call. The `ResultSet` has a `data` property that allows you to access the records pulled down from the API.
 
 ```javascript
 // Let's only return 10 results per call
@@ -64,11 +64,11 @@ The One SDK provides convenience methods for fetching data by its unique identif
 // Let's grab some quotes from the API
 const resultSet = await client.fetchQuotes();
 
-// Let's grab the movie for the first quote
+// Let's grab the movie for the first quote in our results
 const firstQuote = resultSet.data[0];
-const movie = await client.fetchMovie(firstQuote.id);
+const movie = await client.fetchMovie(firstQuote.movieId);
 
-console.log(`The quote ${quote.dialog} is from ${movie.name}`);
+console.log(`The quote ${firstQuote.dialog} is from ${movie.name}`);
 ```
 
 #### Pagination
@@ -119,14 +119,14 @@ It is possible to filter results when fetching results from The One API. The [fi
 import { matchFilter, regexFilter } from "es-liblab-take-home-project";
 
 const returnOfTheKing = await client.fetchMovies({
-  filters: matchFilter("name", "The Return Of The King"),
+  filters: [matchFilter("name", "The Return of the King")],
 });
 console.log(
   `The Return of the King has a Rotten Tomatoes score of ${returnOfTheKing.data[0].rottenTomatoesScore}`
 );
 
 const talkingAboutSam = await client.fetchQuotes({
-  filters: regexFilter("dialog", /Sam/),
+  filters: [regexFilter("dialog", /Sam/)],
 });
 console.log(`There are ${talkingAboutSam.total} quotes that mention Sam.`);
 ```
